@@ -13,7 +13,6 @@ const mapStateToProps = state =>{
 const mapDispatchToProps = dispatch =>{
     return{
         signup: user => dispatch(signup(user))
-        //signup: user => console.log("Tried to  sign up user: ",user)
     }
 }
 
