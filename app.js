@@ -5,17 +5,30 @@ const users = require("./routes/api/users");
 const tweets = require("./routes/api/tweets");
 const app = express();
 const db = require("./config/keys").mongoURI;
+const User = require("./models/User");
+const passport = require("passport");
+const path = require('path');
 
 mongoose
   .connect(db, { useNewUrlParser: true })
   .then(() => console.log("Connected to MongoDB successfully"))
   .catch((err) => console.log(err));
 
-app.get("/", (req, res) => res.send("Hello World, JavaScript!!"));
-app.use("/api/users", users);
-app.use("/api/tweets", tweets);
+app.use(passport.initialize());
+require("./config/passport")(passport);
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+if(process.env.NODE_ENV === 'production'){
+  app.use(express.static('frontend/build'));
+  app.get('/', (req,res)=>{
+    res.sendFile(path.resolve(_dirname, 'frontend', 'build', 'index.html'));
+  })
+}
+
+app.use("/api/users", users);
+app.use("/api/tweets", tweets);
 
 const port = process.env.PORT || 5000;
 
